@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en"> 
+<head>
+  <title>OCR Online Gratis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class", // or 'media'
+      theme: {
+        extend: {
+          colors: {
+            border: "hsl(var(--border))",
+            input: "hsl(var(--input))",
+            ring: "hsl(var(--ring))",
+            background: "hsl(var(--background))",
+            foreground: "hsl(var(--foreground))",
+            primary: {
+              DEFAULT: "hsl(var(--primary))",
+              foreground: "hsl(var(--primary-foreground))",
+            },
+            secondary: {
+              DEFAULT: "hsl(var(--secondary))",
+              foreground: "hsl(var(--secondary-foreground))",
+            },
+            muted: {
+              DEFAULT: "hsl(var(--muted))",
+              foreground: "hsl(var(--muted-foreground))",
+            },
+            card: {
+              DEFAULT: "hsl(var(--card))",
+              foreground: "hsl(var(--card-foreground))",
+            },
+          },
+          borderRadius: {
+            lg: "var(--radius)",
+            md: "calc(var(--radius) - 2px)",
+            sm: "calc(var(--radius) - 4px)",
+          },
+        },
+      },
+    };
+  </script>
+
+  <style type="text/css">
+    :root {
+      --background: 0 0% 100%;
+      --foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
+      --primary: 222.2 47.4% 11.2%;
+      --primary-foreground: 210 40% 98%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 222.2 84% 4.9%;
+      --radius: 0.5rem;
+    }
+    
+    .dark {
+      --background: 222.2 84% 4.9%;
+      --foreground: 210 40% 98%;
+      --card: 222.2 84% 4.9%;
+      --card-foreground: 210 40% 98%;
+      --popover: 222.2 84% 4.9%;
+      --popover-foreground: 210 40% 98%;
+      --primary: 210 40% 98%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 217.2 32.6% 17.5%;
+      --secondary-foreground: 210 40% 98%;
+      --muted: 217.2 32.6% 17.5%;
+      --muted-foreground: 215 20.2% 65.1%;
+      --border: 217.2 32.6% 17.5%;
+      --input: 217.2 32.6% 17.5%;
+      --ring: 212.7 26.8% 83.9%;
+    }
+  </style>
+
+  <script type="module">
+  import pdfjsDist from 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/+esm';
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.2.67/build/pdf.worker.min.mjs";
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  
+</head>
+
+<body class="bg-background text-foreground antialiased min-h-screen">
+
+  <main class="container mx-auto p-4 md:p-8 max-w-5xl">
+    <header class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-6">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight">OCR Online Bahasa Indonesia</h1>
+        <br><p class="">OCR adalah Optical Character Recognitiion. Fitur OCR ini berguna untuk mengekstrak teks dari dokumen gambar atau PDF. Fitur ini mampu beroperasi secara offline dan tanpa perlu upload ke server, sehingga lebih cepat.</p>
+        <br>
+        <p class="text-sm">Dikembangkan sebagai salah sat aksi RABN CPNS BPS 2026.</p> <br> <p class="text-sm text-gray-600">Versi 0.2, April 2026</p>
+      </div>
+    </header>
+
+    <div class="rounded-xl border bg-card text-card-foreground shadow mb-8">
+      <div class="flex flex-col space-y-1.5 p-6">
+        <h3 class="font-semibold leading-none tracking-tight">Masukkan File</h3>
+        <p class="text-sm text-muted-foreground">Silakan masukkan file gambar atau PDF dalam kotak di bawah ini untuk diekstrak teksnya.</p>
+      </div>
+      <div class="p-6 pt-0 space-y-4">
+        <!-- Input language dan tombol -->
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div class="flex items-center gap-2">
+            <label for="id_language" class="text-sm font-medium"></label>
+            <select id="id_language" class="hidden flex h-10 items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 w-full sm:w-[200px]">
+              <option></option>
+            </select>
+          </div>
+          <div class="actions">
+            <button id="loadExampleButton" type="button" aria-label="Load example PDF" class=" hidden inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-secondary text-secondary-foreground hover:bg-secondary/80 h-10 px-4 py-2">
+              Load Example PDF
+            </button>
+          </div>
+        </div>
+        
+        <input type="file" id="fileInput" accept=".pdf" class="hidden" />
+        <div id="dropzone" class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted/50 hover:bg-muted/80 transition-colors border-muted-foreground/30">
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <svg class="w-8 h-8 mb-4 text-muted-foreground" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/></svg>
+            <p class="mb-2 text-sm text-muted-foreground text-center px-4">
+              <span class="font-semibold text-primary">Klik untuk upload PDF</span> atau drag ke dalam kotak ini.
+            </p>
+            <p class="text-xs text-muted-foreground">(Hanya menerima file PDF untuk saat ini)</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="full-document-section" id="fullDocumentSection" style="display: none;">
+      <div class="rounded-xl border bg-card text-card-foreground shadow">
+        <div class="flex flex-col space-y-1.5 p-6">
+          <h3 class="font-semibold leading-none tracking-tight">Hasil Ekstrak Teks</h3>
+          <p class="text-xs text-muted-foreground">Teks ini yang kemudian akan disimpan di server dan digunakan oleh fitur archive search (Temu Kembali Informasi)</p>
+        </div>
+        <div class="p-6 pt-0">
+          <textarea id="fullDocument" class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" rows="25"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <h2 id="pagesTitle" class="text-2xl font-semibold tracking-tight mt-8 mb-4" style="display: none;">Daftar Halaman & Detail OCR</h2>
+    <p class="text-xs text-muted-foreground">Detail halaman di bawah ini adalah fitur untuk keperluan demo dan Eksperimentasi.</p><br>
+
+    <div class="image-container grid grid-cols-1 md:grid-cols-2 gap-6">
+      </div>
+    
+    <footer class="mt-20 text-center text-sm text-muted-foreground">
+      <p>Eksperimen OCR sebagai salah satu aksi Rencana Aksi Bela Negara (RABN)<hr> Lazuardyas Zhafran Ligardi 2026. Open source ada di github.com/ligardi</p>
+    </footer>
+
+  </main>
+
+<script>
+
+const desiredWidth = 1000;
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const imageContainer = document.querySelector('.image-container');
+const fullDocumentTextarea = document.getElementById('fullDocument');
+const fullDocumentSection = document.getElementById('fullDocumentSection');
+const languageSelect = document.getElementById('id_language');
+const loadExampleButton = document.getElementById('loadExampleButton');
+const pagesTitle = document.getElementById('pagesTitle');
+
+const EXAMPLE_URL = 'https://static.simonwillison.net/static/cors-allow/2025/attention-all-you-need.pdf';
+const DROPZONE_DEFAULT_HTML = dropzone.innerHTML;
+
+let fileSelectionAllowed = true;
+
+const LANGUAGES = {
+  "afr": "Afrikaans", "amh": "Amharic", "ara": "Arabic", "asm": "Assamese", "aze": "Azerbaijani",
+  "aze_cyrl": "Azerbaijani - Cyrillic", "bel": "Belarusian", "ben": "Bengali", "bod": "Tibetan",
+  "bos": "Bosnian", "bul": "Bulgarian", "cat": "Catalan; Valencian", "ceb": "Cebuano", "ces": "Czech",
+  "chi_sim": "Chinese - Simplified", "chi_tra": "Chinese - Traditional", "chr": "Cherokee",
+  "cym": "Welsh", "dan": "Danish", "deu": "German", "dzo": "Dzongkha", "ell": "Greek, Modern (1453-)",
+  "eng": "English", "enm": "English, Middle (1100-1500)", "epo": "Esperanto", "est": "Estonian",
+  "eus": "Basque", "fas": "Persian", "fin": "Finnish", "fra": "French", "frk": "German Fraktur",
+  "frm": "French, Middle (ca. 1400-1600)", "gle": "Irish", "glg": "Galician",
+  "grc": "Greek, Ancient (-1453)", "guj": "Gujarati", "hat": "Haitian; Haitian Creole",
+  "heb": "Hebrew", "hin": "Hindi", "hrv": "Croatian", "hun": "Hungarian", "iku": "Inuktitut",
+  "ind": "Indonesian", "isl": "Icelandic", "ita": "Italian", "ita_old": "Italian - Old",
+  "jav": "Javanese", "jpn": "Japanese", "kan": "Kannada", "kat": "Georgian", "kat_old": "Georgian - Old",
+  "kaz": "Kazakh", "khm": "Central Khmer", "kir": "Kirghiz; Kyrgyz", "kor": "Korean", "kur": "Kurdish",
+  "lao": "Lao", "lat": "Latin", "lav": "Latvian", "lit": "Lithuanian", "mal": "Malayalam",
+  "mar": "Marathi", "mkd": "Macedonian", "mlt": "Maltese", "msa": "Malay", "mya": "Burmese",
+  "nep": "Nepali", "nld": "Dutch; Flemish", "nor": "Norwegian", "ori": "Oriya", "pan": "Panjabi; Punjabi",
+  "pol": "Polish", "por": "Portuguese", "pus": "Pushto; Pashto", "ron": "Romanian; Moldavian; Moldovan",
+  "rus": "Russian", "san": "Sanskrit", "sin": "Sinhala; Sinhalese", "slk": "Slovak", "slv": "Slovenian",
+  "spa": "Spanish; Castilian", "spa_old": "Spanish; Castilian - Old", "sqi": "Albanian", "srp": "Serbian",
+  "srp_latn": "Serbian - Latin", "swa": "Swahili", "swe": "Swedish", "syr": "Syriac", "tam": "Tamil",
+  "tel": "Telugu", "tgk": "Tajik", "tgl": "Tagalog", "tha": "Thai", "tir": "Tigrinya", "tur": "Turkish",
+  "uig": "Uighur; Uyghur", "ukr": "Ukrainian", "urd": "Urdu", "uzb": "Uzbek", "uzb_cyrl": "Uzbek - Cyrillic",
+  "vie": "Vietnamese", "yid": "Yiddish"
+}
+
+while (languageSelect.firstChild) {
+  languageSelect.removeChild(languageSelect.firstChild);
+}
+for (const code of Object.values(Tesseract.languages)) {
+  const name = LANGUAGES[code];
+  const option = document.createElement('option');
+  option.value = code;
+  option.textContent = name || code;
+  if (option.value == 'eng') {
+    option.selected = true;
+  }
+  languageSelect.appendChild(option);
+}
+
+function showFullDocument() {
+  const populatedTextareas = Array.from(
+    document.querySelectorAll('.image-container textarea')
+  ).filter(ta => ta.value.trim().length);
+  
+  if (populatedTextareas.length > 1) {
+    fullDocumentTextarea.value = populatedTextareas.map(ta => ta.value.trim()).join("\n\n");
+    fullDocumentSection.style.display = 'block';
+    // fix: juudul halaman
+    pagesTitle.style.display = 'block';
+  } else {
+    fullDocumentTextarea.value = '';
+    fullDocumentSection.style.display = 'none';
+    // 8. Hide the "Pages" title
+    pagesTitle.style.display = 'none';
+  }
+}
+
+function setTextarea(ta, text) {
+  ta.value = text.trim();
+  ta.style.height = 'auto';
+  ta.style.height = (ta.scrollHeight + 5) + 'px';
+}
+
+dropzone.addEventListener('dragover', handleDragOver);
+dropzone.addEventListener('dragleave', handleDragLeave);
+dropzone.addEventListener('drop', handleDrop);
+dropzone.addEventListener('click', handleClick);
+loadExampleButton.addEventListener('click', loadExamplePDF);
+
+async function handleDragOver(event) {
+  event.preventDefault();
+  if (fileSelectionAllowed) {
+    dropzone.classList.add('bg-primary/10', 'border-primary');
+  }
+}
+
+async function handleDragLeave(event) {
+  event.preventDefault();
+  if (fileSelectionAllowed) {
+    dropzone.classList.remove('bg-primary/10', 'border-primary');
+  }
+}
+
+async function handleDrop(event) {
+  event.preventDefault();
+  if (fileSelectionAllowed) {
+    dropzone.classList.remove('bg-primary/10', 'border-primary');
+    const file = event.dataTransfer.files[0];
+    fileInput.files = event.dataTransfer.files;
+    processFile(file);
+  }
+}
+
+async function handleClick() {
+  if (fileSelectionAllowed) {
+    fileInput.click();
+  }
+}
+
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  processFile(file);
+});
+
+async function loadExamplePDF() {
+  if (!fileSelectionAllowed) return;
+  const previousHtml = dropzone.innerHTML;
+  dropzone.innerHTML = `<p class="text-sm text-primary">Fetching example PDF...</p>`;
+  dropzone.classList.add('opacity-50', 'cursor-not-allowed');
+  fileSelectionAllowed = false;
+
+  try {
+    const response = await fetch(EXAMPLE_URL, { mode: 'cors' });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const blob = await response.blob();
+    const pdfBlob = blob.type === 'application/pdf' ? blob : new Blob([blob], { type: 'application/pdf' });
+    const file = new File([pdfBlob], 'attention-is-all-you-need.pdf', { type: 'application/pdf' });
+
+    try {
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      fileInput.files = dt.files;
+    } catch (e) {
+      
+    }
+
+    await processFile(file);
+  } catch (err) {
+    console.error('gagall', err);
+    alert('gagalll');
+  } finally {
+    dropzone.innerHTML = DROPZONE_DEFAULT_HTML;
+    dropzone.classList.remove('opacity-50', 'cursor-not-allowed');
+    fileSelectionAllowed = true;
+  }
+}
+
+async function processFile(file) {
+  const worker = await Tesseract.createWorker(languageSelect.value);
+  fullDocumentTextarea.value = '';
+  fullDocumentSection.style.display = 'none';
+  pagesTitle.style.display = 'none';
+  imageContainer.innerHTML = '';
+  
+  const originalHtml = dropzone.innerHTML;
+  dropzone.innerHTML = `<p class="text-sm text-primary">Memproses PDF...</p>`;
+  dropzone.classList.add('opacity-50', 'cursor-not-allowed');
+  fileSelectionAllowed = false;
+
+  if (file.type === 'application/pdf') {
+    const { numPages, imageIterator } = await convertPDFToImages(file);
+    let done = 0;
+    dropzone.innerHTML = `<p class="text-sm text-primary">Memproses ${numPages} halaman${numPages > 1 ? '' : ''}</p>`;
+    for await (const { imageURL } of imageIterator) {
+      const ta = await displayImage(imageURL);
+      const { text } = await ocrImage(worker, imageURL);
+      setTextarea(ta, text);
+      showFullDocument();
+      done += 1;
+      dropzone.innerHTML = `<p class="text-sm text-primary">Memproses ${done} dari ${numPages} halaman</p>`;
+    }
+  } else {
+    const imageURL = URL.createObjectURL(file);
+    const ta = await displayImage(imageURL);
+    const { text } = await ocrImage(worker, imageURL);
+    setTextarea(ta, text);
+    showFullDocument();
+  }
+
+  await worker.terminate();
+  dropzone.innerHTML = originalHtml;
+  dropzone.classList.remove('opacity-50', 'cursor-not-allowed');
+  fileSelectionAllowed = true;
+}
+
+//  16 April: async bikin card utk display tiap halaman
+async function displayImage(imageURL) {
+  const card = document.createElement('div');
+  card.className = "rounded-xl border bg-card text-card-foreground shadow overflow-hidden"; // shadcn Card base
+
+  const imgElement = document.createElement('img');
+  imgElement.src = imageURL;
+  imgElement.className = "w-full h-auto border-b"; 
+  card.appendChild(imgElement);
+
+  const cardContent = document.createElement('div');
+  cardContent.className = "p-4"; 
+
+  const altTextarea = document.createElement('textarea');
+  
+  altTextarea.className = "flex min-h-[40px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"; 
+  altTextarea.placeholder = '...Memproses OCR';
+  cardContent.appendChild(altTextarea);
+  
+  card.appendChild(cardContent);
+  imageContainer.appendChild(card);
+
+  return altTextarea;
+}
+
+async function rerunOCR() {
+  const textareas = document.querySelectorAll('.image-container textarea');
+  const images = document.querySelectorAll('.image-container img');
+
+  if (!textareas.length) {
+    return;
+  }
+
+  Array.from(textareas).forEach(ta => ta.value = '');
+  showFullDocument();
+
+  const numImages = images.length;
+  let done = 0;
+  dropzone.innerHTML = `<p class="text-sm text-primary">Memproses ${numImages} in</p>`;
+
+  const worker = await Tesseract.createWorker(languageSelect.value);
+
+  for (let i = 0; i < numImages; i++) {
+    const imageURL = images[i].src;
+    const ta = textareas[i];
+    ta.placeholder = 'Melakukan OCR......';
+    const { text } = await ocrImage(worker, imageURL);
+    setTextarea(ta, text);
+    showFullDocument();
+    done += 1;
+    dropzone.innerHTML = `<p class="text-sm text-primary">Selesai OCR ${done} halaman dari ${numImages} halaman</p>`;
+  }
+  await worker.terminate();
+  dropzone.innerHTML = DROPZONE_DEFAULT_HTML; // Restore
+}
+
+
+document.addEventListener('paste', (event) => {
+  const items = (event.clipboardData || event.originalEvent.clipboardData).items;
+  const images = Array.from(items).filter(item => item.type.indexOf('image') !== -1);
+  if (images.length) {
+    processFile(images[0].getAsFile());
+  }
+});
+
+async function convertPDFToImages(file) {
+  const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+  const numPages = pdf.numPages;
+  async function* images() {
+    for (let i = 1; i <= numPages; i++) {
+      try {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 1 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = desiredWidth;
+        canvas.height = (desiredWidth / viewport.width) * viewport.height;
+        const renderContext = {
+          canvasContext: context,
+          viewport: page.getViewport({ scale: desiredWidth / viewport.width }),
+        };
+        await page.render(renderContext).promise;
+        const imageURL = canvas.toDataURL('image/jpeg', 0.8);
+        yield { imageURL };
+      } catch (error) {
+        console.error(`Error rendering page ${i}:`, error);
+      }
+    }
+  }
+  return {numPages: numPages, imageIterator: images()};
+}
+
+async function ocrImage(worker, imageUrl) {
+  const {
+    data: { text },
+  } = await worker.recognize(imageUrl);
+  return { text };
+}
+
+languageSelect.addEventListener('change', async (event) => {
+  let newUrl = window.location.pathname;
+  let language = event.target.value;
+  if (language != 'eng') {
+    newUrl += '?language=' + language;
+  }
+  window.history.pushState({ path: newUrl }, '', newUrl);
+  await rerunOCR();
+});
+
+function setLanguageFromQueryString() {
+  const params = new URLSearchParams(window.location.search);
+  let value = params.get('language');
+  if (!value) {
+    value = 'eng';
+  }
+  languageSelect.value = value;
+}
+
+window.addEventListener('load', setLanguageFromQueryString);
+window.addEventListener('popstate', (event) => {
+  setLanguageFromQueryString();
+});
+</script>
+</body>
+</html>
